@@ -94,7 +94,7 @@ class FloatField(Field):
         super().__init__(name, 'real', is_primary_key, default)
 
 
-class TextField(Filed):
+class TextField(Field):
     def __init__(self, name=None, default=None):
         super().__init__(name, 'text', False, default)
 
@@ -173,7 +173,7 @@ class Model(dict, metaclass=ModelMetaclass):
             field = self.__mappings__[key]
             if field.default is not None:
                 value = field.default() if callable(field.default) else field.default
-                logging.debug('using default value for %s' % (key, str(value)))
+                logging.debug('using default value for key: %s, value: %s' % (key, str(value)))
                 setattr(self, key, value)
         return value
 
@@ -209,9 +209,9 @@ class Model(dict, metaclass=ModelMetaclass):
         return [cls(**r) for r in rs]
 
     @classmethod
-    async def find_number(cls, selected_field, where):
+    async def find_number(cls, selected_fields, where=None, args=None):
         ' find number by select and where'
-        sql = ['select %s _num_ from `%s`' % (select_fields, cls.__table__)]
+        sql = ['select %s _num_ from `%s`' % (selected_fields, cls.__table__)]
 
         if where:
             sql.append('where')
